@@ -11,12 +11,18 @@ $(document).ready($(function () {
     localStorage.setItem(hourIndex,eventsText);
   })
   
-  // Coerces the current time into a number for arithmetic purposes
+  // Takes the current time and formats it into 24 hour output
   var currentHour = Number(dayjs().format("HH"));
+  // Creates an array of the time slots
   var hourSlots = $(".container-lg").children();
   for (i=0;i<hourSlots.length;i++) {
+    // Get the id of the current time slot the loop is on
     var hourId = hourSlots[i].id;
+    // Turns that id into a number. Want both hour and currentHour to be numbers
+    // so arithmetic functions properly
     var hour = Number(hourId.slice(hourId.search("-")+1));
+    // This checks the id of the time slot against the currentHour, determining
+    // whether it is in present, future, or past.
     if (currentHour<=hour) {
       if (hour===currentHour) {
         $(hourSlots[i]).addClass("present")
