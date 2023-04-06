@@ -31,9 +31,15 @@ $(document).ready($(function () {
   // useful when saving the description in local storage?
   $(".saveBtn").on("click",function(){
     var hourIndex = $(this).parent()[0].id;
-    var eventsText = $(this).siblings("textarea")[0].value;
+    var eventsText = $(this).siblings("textarea")[0].value.trim();
     console.log(hourIndex);
     console.log(eventsText);
+    if (eventsText!=="") {
+      localStorage.setItem(hourIndex,eventsText);
+    } else {
+      console.log("whitespace");
+      return;
+    }
   })
 
   // TODO: Add code to apply the past, present, or future class to each time
