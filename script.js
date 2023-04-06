@@ -1,61 +1,35 @@
-// USER STORY
-// AS AN employee with a busy schedule
-// I WANT to add important events to a daily planner
-// SO THAT I can manage my time effectively
-
-// ACCEPTANCE CRITERIA
-// GIVEN I am using a daily planner to create a schedule
-// WHEN I open the planner
-// THEN the current day is displayed at the top of the calendar
-// WHEN I scroll down
-// THEN I am presented with timeblocks for standard business hours
-// WHEN I view the timeblocks for that day
-// THEN each timeblock is color coded to indicate whether it is in the past, present, or future
-// WHEN I click into a timeblock
-// THEN I can enter an event
-// WHEN I click the save button for that timeblock
-// THEN the text for that event is saved in local storage
-// WHEN I refresh the page
-// THEN the saved events persist
-
-// Wrap all code that interacts with the DOM in a call to jQuery to ensure that
-// the code isn't run until the browser has finished rendering all the elements
-// in the html.
 $(document).ready($(function () {
-  console.log("ready!")
-  // TODO: Add a listener for click events on the save button. This code should
-  // use the id in the containing time-block as a key to save the user input in
-  // local storage. HINT: What does `this` reference in the click listener
-  // function? How can DOM traversal be used to get the "hour-x" id of the
-  // time-block containing the button that was clicked? How might the id be
-  // useful when saving the description in local storage?
+
+  // This trims the whitespace, but still allows whitespace to be entered, as a
+  // delete function.
   $(".saveBtn").on("click",function(){
     var hourIndex = $(this).parent()[0].id;
     var eventsText = $(this).siblings("textarea")[0].value.trim();
-    console.log(hourIndex);
-    console.log(eventsText);
-    if (eventsText!=="") {
-      localStorage.setItem(hourIndex,eventsText);
-    } else {
-      console.log("whitespace");
-      return;
-    }
+    localStorage.setItem(hourIndex,eventsText);
   })
+  
+  // Coerces the current time into a number for arithmetic purposes
+  var currentHour = Number(dayjs().format("HH"));
+  var hourSlots = $(".container-lg").children()
+  for (i=0;i<hourSlots.length;i++) {
+    var hourId = hourSlots[i].id
+    var hour = Number(hourId.slice(hourId.search("-")+1))
+    if (currentHour<=hour) {
+      if (hour===currentHour) {
+        $(hourSlots[i]).addClass("present")
+      } else {
+        $(hourSlots[i]).addClass("future")
+      }
+    } else {
+      $(hourSlots[i]).addClass("past")
+    }
+  }
 
-  // TODO: Add code to apply the past, present, or future class to each time
-  // block by comparing the id to the current hour. HINTS: How can the id
-  // attribute of each time-block be used to conditionally add or remove the
-  // past, present, and future classes? How can Day.js be used to get the
-  // current hour in 24-hour time?
-  console.log(dayjs().format("HH"));
-
-  // TODO: Add code to get any user input that was saved in localStorage and set
-  // the values of the corresponding textarea elements. HINT: How can the id
-  // attribute of each time-block be used to do this?
-  var hours = ["hour-9","hour-10","hour-11"]
-  for (i=0;i<hours.length;i++) {
-    var stored = localStorage.getItem(hours[i])
-    $("#"+hours[i]).children("textarea").val(stored);
+  // This function loops over the time blocks on the page and replaces whatever
+  // text is there with the text from Local Storage.
+  for (i=0;i<hourSlots.length;i++) {
+    var stored = localStorage.getItem(hourSlots[i].id)
+    $("#"+hourSlots[i].id).children("textarea").val(stored);
   }
   
   // Displays the current date in the header of the page.
